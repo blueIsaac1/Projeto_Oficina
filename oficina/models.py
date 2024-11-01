@@ -7,7 +7,7 @@ class Categories(models.Model):
     description = models.TextField()
 
     def __str__(self):
-        return f"Categoria {self.name}"
+        return f"Id: {self.id} - Categoria {self.name}"
     
 
 class Clients(models.Model):
@@ -21,7 +21,7 @@ class Clients(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Cliente: {self.name}"
+        return f"Id: {self.id} - Cliente: {self.name}"
     
 
 class Products(models.Model):
@@ -35,7 +35,7 @@ class Products(models.Model):
     description = models.TextField()
 
     def __str__(self):
-        return f"Produto: {self.name}, Status: {self.get_status_p_display()}"
+        return f"Id: {self.id} - Produto: {self.name} - Status: {self.get_status_p_display()}"
     
 
 class Payments(models.Model):
@@ -50,7 +50,7 @@ class Payments(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Pagamento {self.get_method_display()}"
+        return f"{self.get_method_display()}"
     
 
 class Orders(models.Model):
@@ -83,4 +83,4 @@ class Employee(models.Model):
     e_created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Funcionario: {self.e_name}"
+        return f"Id: {self.id} - Funcionario: {self.e_name}"
