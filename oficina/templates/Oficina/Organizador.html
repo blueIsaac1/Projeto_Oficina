@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trello Clone</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f5f6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .board {
+            display: flex;
+        }
+
+        .column {
+            background-color: white;
+            border-radius: 5px;
+            width: 300px;
+            margin: 0 10px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .column h2 {
+            text-align: center;
+        }
+
+        .tasks {
+            min-height: 200px;
+        }
+
+        .task {
+            background-color: #ebecf0;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 3px;
+        }
+
+        .task-input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .add-task {
+            width: 100%;
+            padding: 10px;
+            cursor: pointer;
+            background-color: #5aac44;
+            color: white;
+            border: none;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="board">
+            <div class="column" id="todo">
+                <h2>A Fazer</h2>
+                <div class="tasks"></div>
+                <input type="text" class="task-input" placeholder="Adicionar tarefa...">
+                <button class="add-task">Adicionar</button>
+            </div>
+            <div class="column" id="doing">
+                <h2>Fazendo</h2>
+                <div class="tasks"></div>
+                <input type="text" class="task-input" placeholder="Adicionar tarefa...">
+                <button class="add-task">Adicionar</button>
+            </div>
+            <div class="column" id="done">
+                <h2>Concluído</h2>
+                <div class="tasks"></div>
+                <input type="text" class="task-input" placeholder="Adicionar tarefa...">
+                <button class="add-task">Adicionar</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.querySelectorAll('.add-task').forEach(button => {
+            button.addEventListener('click', () => {
+                const column = button.parentElement.parentElement;
+                const input = column.querySelector('.task-input');
+                const taskText = input.value.trim();
+
+                if (taskText) {
+                    const task = document.createElement('div');
+                    task.classList.add('task');
+                    task.innerText = taskText;
+
+                    task.draggable = true;
+                    task.addEventListener('dragstart', () => {
+                        task.classList.add('dragging');
+                    });
+
+                    task.addEventListener('dragend', () => {
+                        task.classList.remove('dragging');
+                    });
+
+                    column.querySelector('.tasks').appendChild(task);
+                    input.value = '';
+
+                    document.querySelectorAll('.tasks').forEach(tasks => {
+                        tasks.addEventListener('dragover', (e) => {
+                            e.preventDefault();
+                            const dragging = document.querySelector('.dragging');
+                            const afterElement = getDragAfterElement(tasks, e.clientY);
+                            if (afterElement) {
+                                tasks.insertBefore(dragging, afterElement);
+                            } else {
+                                tasks.appendChild(dragging);
+                            }
+                        });
+                    });
+                }
+            });
+        });
+
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.task:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+/* Estilos gerais */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+
+/* Estilos para o Navbar */
+.header {
+    background-color: #333;
+    color: white;
+    padding: 25px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1;
+}
+
+.menu-bar a{
+    font-size: 1.5rem;
+    color: white;
+    margin-left: 3.5rem;
+    transition: 0.4s ease;
+}
+
+#menu-btn{
+    font-size: 3rem;
+    display: none;
+}
+.menu-bar a {
+    font-size: 1.5rem;
+    margin-left: 3.5rem;
+    transition: 0.4s ease;
+}
+
+/*passar o mouse e a cor mudar*/
+.menu-bar a:hover {
+    color: #A020F0;
+}
+
+
+/* Estilos para o Footer */
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Opcional: se quiser um fundo distinto no footer */
+footer p {
+    margin: 0; /* Remove margens do parágrafo */
+}

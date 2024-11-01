@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nome do Sistema</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'Oficina/styles.css' %}">
+</head>
+<body>
+
+    <!-- cabeçalho com as opções-->
+    <header class="header">
+        <nav class="menu-bar">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'home' %}">Produtos</a>
+            <a href="{% url 'home' %}">Clientes</a>
+            <a href="{% url 'home' %}">Estoque de Peças</a>
+            <a href="{% url 'home' %}">Estoque de Vendas</a>
+            <a href="{% url 'organizador' %}">Ordem de Serviço</a>
+
+        </nav>
+    </header>
+
+
+    <div class="content">
+        {% block content %}
+        <p>Conteúdo dinâmico aqui.</p>  <!-- Conteúdo padrão -->
+        {% endblock %}
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Meu Sistema. Todos os direitos reservados.</p>
+    </footer>
+</body>
+</html>
