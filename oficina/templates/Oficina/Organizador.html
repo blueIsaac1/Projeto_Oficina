@@ -67,77 +67,168 @@
         <div class="board">
             <div class="column" id="todo">
                 <h2>A Fazer</h2>
-                <div class="tasks"></div>
-                <input type="text" class="task-input" placeholder="Adicionar tarefa...">
-                <button class="add-task">Adicionar</button>
+                <div class="tasks">
+                    {% for o in os %}
+                    <div class = "task" draggable="true" data-order-id="{{ o.id }}">
+                        {{ o.o_product }}
+                    </div>
+                    {% empty %}
+                        <p>Nenhuma sala disponível.</p>
+                    {% endfor %}
+                </div>
+                <!-- <input type="text" class="task-input" placeholder="Adicionar tarefa...">
+                <button class="add-task">Adicionar</button> -->
             </div>
             <div class="column" id="doing">
                 <h2>Fazendo</h2>
-                <div class="tasks"></div>
-                <input type="text" class="task-input" placeholder="Adicionar tarefa...">
-                <button class="add-task">Adicionar</button>
+                <div class="tasks">
+                    {% for o in op %}
+                    <div class = "task" draggable="true" data-order-id="{{ o.id }}">
+                        {{ o.o_product }}
+                    </div>
+                    {% empty %}
+                        <p>Nenhuma sala disponível.</p>
+                    {% endfor %}
+                </div>
+                <!-- <input type="text" class="task-input" placeholder="Adicionar tarefa...">
+                <button class="add-task">Adicionar</button> -->
             </div>
             <div class="column" id="done">
                 <h2>Concluído</h2>
-                <div class="tasks"></div>
-                <input type="text" class="task-input" placeholder="Adicionar tarefa...">
-                <button class="add-task">Adicionar</button>
+                <div class="tasks">
+                    {% for o in oc %}
+                        <div class = "task" draggable="true" data-order-id="{{ o.id }}">
+                            {{ o.o_product }}
+                        </div>
+                    {% empty %}
+                        <p>Nenhuma sala disponível.</p>
+                    {% endfor %}
+                </div>
+                <!-- <input type="text" class="task-input" placeholder="Adicionar tarefa...">
+                <button class="add-task">Adicionar</button> -->
             </div>
         </div>
     </div>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="form_type" value="order_form">
+        {{ form_order.as_p }}
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="form_type" value="client_form">
+        {{ form_client.as_p }}
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="form_type" value="product_form">
+        {{ form_product.as_p }}
+        <button type="submit">Cadastrar</button>
+    </form>
+
+
     <script>
-        document.querySelectorAll('.add-task').forEach(button => {
-            button.addEventListener('click', () => {
-                const column = button.parentElement.parentElement;
-                const input = column.querySelector('.task-input');
-                const taskText = input.value.trim();
+    document.addEventListener('DOMContentLoaded', () => {
+    // Função para capturar o elemento de arraste
+    function getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll('.task:not(.dragging)')];
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
 
-                if (taskText) {
-                    const task = document.createElement('div');
-                    task.classList.add('task');
-                    task.innerText = taskText;
+    // Mapeamento de status para as colunas
+    const statusMap = {
+        'todo': '1', // Iniciado
+        'doing': '2', // Em andamento
+        'done': '3'   // Finalizado
+    };
 
-                    task.draggable = true;
-                    task.addEventListener('dragstart', () => {
-                        task.classList.add('dragging');
-                    });
-
-                    task.addEventListener('dragend', () => {
-                        task.classList.remove('dragging');
-                    });
-
-                    column.querySelector('.tasks').appendChild(task);
-                    input.value = '';
-
-                    document.querySelectorAll('.tasks').forEach(tasks => {
-                        tasks.addEventListener('dragover', (e) => {
-                            e.preventDefault();
-                            const dragging = document.querySelector('.dragging');
-                            const afterElement = getDragAfterElement(tasks, e.clientY);
-                            if (afterElement) {
-                                tasks.insertBefore(dragging, afterElement);
-                            } else {
-                                tasks.appendChild(dragging);
-                            }
-                        });
-                    });
-                }
-            });
+    // Adiciona eventos de drag-and-drop a cada tarefa
+    document.querySelectorAll('.task').forEach(task => {
+        task.addEventListener('dragstart', () => {
+            task.classList.add('dragging');
         });
 
-        function getDragAfterElement(container, y) {
-            const draggableElements = [...container.querySelectorAll('.task:not(.dragging)')];
-            return draggableElements.reduce((closest, child) => {
-                const box = child.getBoundingClientRect();
-                const offset = y - box.top - box.height / 2;
+        task.addEventListener('dragend', () => {
+            task.classList.remove('dragging');
+        });
+    });
 
-                if (offset < 0 && offset > closest.offset) {
-                    return { offset: offset, element: child };
-                } else {
-                    return closest;
-                }
-            }, { offset: Number.NEGATIVE_INFINITY }).element;
-        }
+    // Configura o comportamento para cada coluna
+    document.querySelectorAll('.tasks').forEach(tasksContainer => {
+        tasksContainer.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const draggingTask = document.querySelector('.dragging');
+            const afterElement = getDragAfterElement(tasksContainer, e.clientY);
+            if (afterElement) {
+                tasksContainer.insertBefore(draggingTask, afterElement);
+            } else {
+                tasksContainer.appendChild(draggingTask);
+            }
+        });
+
+        tasksContainer.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const draggingTask = document.querySelector('.dragging');
+            
+            // Verifica se o elemento está sendo arrastado e possui um ID de ordem
+            if (!draggingTask) {
+                console.error("Nenhuma tarefa arrastada.");
+                return;
+            }
+
+            const orderId = draggingTask.getAttribute('data-order-id');
+            const newStatus = tasksContainer.parentElement.id; // 'todo', 'doing', 'done'
+            const statusValue = statusMap[newStatus];
+
+            // Atualiza a interface do usuário imediatamente
+            draggingTask.innerHTML = `Status: ${newStatus === 'todo' ? 'Iniciado' : newStatus === 'doing' ? 'Em andamento' : 'Finalizado'}`;
+            tasksContainer.appendChild(draggingTask); // Adiciona à nova coluna
+
+            // Envia a requisição para atualizar o status no back-end
+            if (orderId && statusValue) {
+                fetch("{% url 'organizador' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: `order_id=${orderId}&new_status=${statusValue}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('Status atualizado com sucesso!');
+                    } else {
+                        console.error('Erro ao atualizar o status:', data.error);
+                        // Se houver erro, você pode querer mover a tarefa de volta
+                        // tasksContainer.removeChild(draggingTask); // Remove da nova coluna
+                        // previousContainer.appendChild(draggingTask); // Adiciona de volta à coluna anterior
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro na requisição:', error);
+                    // Se houver erro, você pode querer mover a tarefa de volta
+                    // tasksContainer.removeChild(draggingTask); // Remove da nova coluna
+                    // previousContainer.appendChild(draggingTask); // Adiciona de volta à coluna anterior
+                });
+            } else {
+                console.error("Order ID ou Status Value não definido corretamente.");
+            }
+        });
+    });
+});
     </script>
 </body>
 </html>

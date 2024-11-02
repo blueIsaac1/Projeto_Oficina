@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'oficina',
+    
 ]
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
@@ -90,7 +91,7 @@ WSGI_APPLICATION = 'ProjectOficina.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'projeto-oficina',
+        'NAME': 'oficina-main',
         'USER': 'postgres',
         'PASSWORD': 'ctdev',
         'HOST': 'localhost',

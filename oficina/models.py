@@ -1,15 +1,22 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+class Services(models.Model):
+    name = models.CharField(max_length=20)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField()
+
+    def __str__(self):
+        return f"{self.name}, {self.price}"
+
 class Categories(models.Model):
     # id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=20)
     description = models.TextField()
 
     def __str__(self):
-        return f"Id: {self.id} - Categoria {self.name}"
+        return f"Categoria: {self.name}"
     
-
 class Clients(models.Model):
     # id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
@@ -21,9 +28,8 @@ class Clients(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Id: {self.id} - Cliente: {self.name}"
+        return f"Cliente: {self.name}"
     
-
 class Products(models.Model):
     # id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=50)
@@ -35,9 +41,12 @@ class Products(models.Model):
     description = models.TextField()
 
     def __str__(self):
-        return f"Id: {self.id} - Produto: {self.name} - Status: {self.get_status_p_display()}"
+        latest_order = self.orders.order_by('-created_at').first()
+        if latest_order:
+            return f"{self.name} - Status: {latest_order.get_status_o_display()} "
+        else:
+            return "Teste"
     
-
 class Payments(models.Model):
     # id = models.IntegerField(primary_key=True)
     class PaymentMethodChoices(models.TextChoices):
@@ -62,14 +71,17 @@ class Orders(models.Model):
         CANCELED = '4', 'Cancelado'
     status_o = models.CharField(max_length=1, choices=Order_Status_Choices.choices, default=Order_Status_Choices.STARTED)
     o_client = models.ForeignKey(Clients, on_delete=models.CASCADE)
-    o_product = models.ForeignKey(Products, on_delete=models.CASCADE)
+    o_product = models.ForeignKey(Products, on_delete=models.CASCADE, related_name='orders')
     o_payment = models.ForeignKey(Payments, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    s_price = models.ForeignKey(Services, on_delete=models.CASCADE)
 
+    def get_product_status(self):
+        return self.o_product.get_status_p_display()
+    
     def __str__(self):
-        return f"Ordem {self.id}, {self.o_product}, {self.o_client}, {self.o_payment}, Preço: {self.price}"
+        return f"Ordem {self.id}, {self.o_product}, {self.o_client}, {self.o_payment}, Preço: {self.s_price} "
     
 
 class Employee(models.Model):
@@ -83,4 +95,5 @@ class Employee(models.Model):
     e_created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Id: {self.id} - Funcionario: {self.e_name}"
+        return f"Funcionario: {self.e_name}"
+    

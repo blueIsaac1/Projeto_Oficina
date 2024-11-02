@@ -1,5 +1,11 @@
 from django.contrib import admin
-from .models import Categories, Clients, Products, Payments, Orders, Employee
+from .models import Categories, Clients, Products, Payments, Orders, Employee, Services
+
+@admin.register(Services)
+class ServicesAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'price', 'description')
+    search_fields = ('name',)
+    list_filter = ('name',)
 
 @admin.register(Categories)
 class CategoriesAdmin(admin.ModelAdmin):
@@ -31,11 +37,11 @@ class PaymentsAdmin(admin.ModelAdmin):
 
 @admin.register(Orders)
 class OrdersAdmin(admin.ModelAdmin):
-    list_display = ('id', 'status_o', 'o_client', 'o_product', 'o_payment', 'price', 'created_by', 'created_at')
+    list_display = ('id', 'status_o', 'o_client', 'o_product', 'o_payment', 's_price', 'created_by', 'created_at')
     list_filter = ('status_o', 'created_at', 'created_by')
     search_fields = ('o_client__name', 'o_product__name')
     fieldsets = (
-        ('Informações do Pedido', {'fields': ('status_o', 'price')}),
+        ('Informações do Pedido', {'fields': ('status_o', 's_price')}),
         ('Cliente e Produto', {'fields': ('o_client', 'o_product')}),
         ('Pagamento', {'fields': ('o_payment',)}),
         ('Informações Adicionais', {'fields': ('created_by',)}),
@@ -51,3 +57,11 @@ class EmployeeAdmin(admin.ModelAdmin):
         ('Documentos', {'fields': ('e_cpf', 'e_rg')}),
         ('Contato', {'fields': ('e_phone',)}),
     )
+
+# admin.site.register(Employee)
+# admin.site.register(Clients)
+# admin.site.register(Orders)
+# admin.site.register(Services)
+# admin.site.register(Categories)
+# admin.site.register(Payments)
+# admin.site.register(Products)
