@@ -73,7 +73,7 @@
                         {{ o.o_product }}
                     </div>
                     {% empty %}
-                        <p>Nenhuma sala disponível.</p>
+                        
                     {% endfor %}
                 </div>
                 <!-- <input type="text" class="task-input" placeholder="Adicionar tarefa...">
@@ -87,7 +87,7 @@
                         {{ o.o_product }}
                     </div>
                     {% empty %}
-                        <p>Nenhuma sala disponível.</p>
+                        
                     {% endfor %}
                 </div>
                 <!-- <input type="text" class="task-input" placeholder="Adicionar tarefa...">
@@ -101,7 +101,7 @@
                             {{ o.o_product }}
                         </div>
                     {% empty %}
-                        <p>Nenhuma sala disponível.</p>
+                        
                     {% endfor %}
                 </div>
                 <!-- <input type="text" class="task-input" placeholder="Adicionar tarefa...">
@@ -193,7 +193,15 @@
             const statusValue = statusMap[newStatus];
 
             // Atualiza a interface do usuário imediatamente
-            draggingTask.innerHTML = `Status: ${newStatus === 'todo' ? 'Iniciado' : newStatus === 'doing' ? 'Em andamento' : 'Finalizado'}`;
+
+            let conteudoTexto = "Produto teste - Status: Iniciado";
+            let produtoTexto = conteudoTexto.split('-')[0].trim(); // pega tudo antes do "-"
+
+            let novoTexto = `${produtoTexto} -  Status: ${newStatus === 'todo' ? 'Iniciado' : newStatus === 'doing' ? 'Em andamento' : 'Finalizado'}`
+
+            draggingTask.textContent = novoTexto
+
+            // draggingTask.innerHTML = `Status: ${newStatus === 'todo' ? 'Iniciado' : newStatus === 'doing' ? 'Em andamento' : 'Finalizado'}`;
             tasksContainer.appendChild(draggingTask); // Adiciona à nova coluna
 
             // Envia a requisição para atualizar o status no back-end
