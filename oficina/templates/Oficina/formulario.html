@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Ordem</title>
+    <style>
+        /* Estilos gerais */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f5f6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input, textarea, button, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .select2-container {
+            width: 100% !important;
+            margin-bottom: 10px;
+        }
+
+        .select2-selection--single {
+            height: auto !important;
+            padding: 8px 10px !important;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            color: #333;
+            box-sizing: border-box;
+        }
+
+        .select2-selection__rendered {
+            color: #333 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            text-align: left;
+            line-height: normal;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .select2-selection__arrow {
+            height: 100%;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .inline-button {
+            display: inline-block;
+            width: auto;
+            padding: 8px 12px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: -5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .close-modal {
+            background: red;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            float: right;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+
+    <div class="container">
+    <h2>Cadastro de Ordem</h2>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="form_type" value="order_form">
+
+        <!-- Seleção de Status -->
+        <label>Status</label>
+        <select name="status_o" required>
+            {% for key, value in form_order.fields.status_o.choices %}
+                <option value="{{ key }}">{{ value }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- Seleção de Cliente e botão para cadastrar novo cliente -->
+        <label>Cliente</label>
+        <select name="o_client" required>
+            <option value="">Selecione um cliente</option>
+            {% for client in form_order.fields.o_client.queryset %}
+                <option value="{{ client.id }}">{{ client }}</option>
+            {% endfor %}
+        </select>
+        <button type="button" class="inline-button" onclick="toggleModal('clientModal')">Cadastrar Cliente</button>
+
+        <!-- Seleção de Produto -->
+        <label>Produto</label>
+        <select name="o_product" required>
+            <option value="">Selecione um produto</option>
+            {% for product in form_order.fields.o_product.queryset %}
+                <option value="{{ product.id }}">{{ product }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- Seleção de Serviço e botão para cadastrar novo serviço -->
+        <label>Serviço</label>
+        <select name="s_price" required>
+            {% for service in form_order.fields.s_price.queryset %}
+                <option value="{{ service.id }}">{{ service.name }} - {{ service.price }}</option>
+            {% endfor %}
+        </select>
+        <button type="button" class="inline-button" onclick="toggleModal('serviceModal')">Cadastrar Serviço</button>
+
+        <!-- Seleção de Forma de Pagamento -->
+        <label>Forma de Pagamento</label>
+        <select name="o_payment" required>
+            {% for key, value in form_order.fields.o_payment.choices %}
+                <option value="{{ key }}">{{ value }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Cadastrar Ordem</button>
+    </form>
+</div>
+
+<!-- Modal para Cadastrar Cliente -->
+<div id="clientModal" class="modal">
+    <div class="modal-content">
+        <button class="close-modal" onclick="toggleModal('clientModal')">&times;</button>
+        <h2>Cadastrar Cliente</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="client_form">
+            {{ form_client.as_p }}
+            <button type="submit">Salvar Cliente</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal para Cadastrar Serviço -->
+<div id="serviceModal" class="modal">
+    <div class="modal-content">
+        <button class="close-modal" onclick="toggleModal('serviceModal')">&times;</button>
+        <h2>Cadastrar Serviço</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="service_form">
+            {{ form_service.as_p }}
+            <button type="submit">Salvar Serviço</button>
+        </form>
+    </div>
+</div>
+
+    <script>
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+    </script>
+
+</body>
+</html>

@@ -8,28 +8,195 @@
 </head>
 <body>
 
-    <!-- cabeçalho com as opções-->
     <header class="header">
+        <a href="#" class="logo">Jackroy</a>
+        <div id="menu-btn" onclick="toggleMenu()">☰</div>
         <nav class="menu-bar">
             <a href="{% url 'home' %}">Home</a>
-            <a href="{% url 'home' %}">Produtos</a>
+            <a href="{% url 'home' %}">Serviço</a>
             <a href="{% url 'home' %}">Clientes</a>
-            <a href="{% url 'home' %}">Estoque de Peças</a>
-            <a href="{% url 'home' %}">Estoque de Vendas</a>
-            <a href="{% url 'organizador' %}">Ordem de Serviço</a>
-
+            <div class="dropdown">
+                <a href="#" onclick="toggleDropdown(event)">Estoque</a>
+                <div class="dropdown-content">
+                    <a href="{% url 'home' %}">Peças</a>
+                    <a href="{% url 'home' %}">Vendas</a>
+                </div>
+            </div>
+            <a href="{% url 'formulario' %}">Formulário</a>
         </nav>
     </header>
 
-
     <div class="content">
         {% block content %}
-        <p>Conteúdo dinâmico aqui.</p>  <!-- Conteúdo padrão -->
+        <div class="container">
+            <div class="board">
+                <div class="column" id="todo">
+                    <h2>A Fazer</h2>
+                    <div class="tasks">
+                        {% for o in os %}
+                        <div id="task-{{ o.id }}" class="task" draggable="true" data-order-id="{{ o.id }}">
+                            {{ o.o_product }} - Status: Iniciado
+                        </div>
+                        {% empty %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="column" id="doing">
+                    <h2>Fazendo</h2>
+                    <div class="tasks">
+                        {% for o in op %}
+                        <div id="task-{{ o.id }}" class="task" draggable="true" data-order-id="{{ o.id }}">
+                            {{ o.o_product }} - Status: Em andamento
+                        </div>
+                        {% empty %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="column" id="done">
+                    <h2>Concluído</h2>
+                    <div class="tasks">
+                        {% for o in oc %}
+                        <div id="task-{{ o.id }}" class="task" draggable="true" data-order-id="{{ o.id }}">
+                            {{ o.o_product }} - Status: Finalizado
+                        </div>
+                        {% empty %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
         {% endblock %}
     </div>
 
-    <footer>
-        <p>&copy; 2024 Meu Sistema. Todos os direitos reservados.</p>
+    <footer id="footer" onclick="toggleFooter()">
+        <div id="footer-content">
+            <img src="{% static 'imagens/MTS.png' %}" width="100">
+        </div>
+        <div id="footer-label">
+            <p>&copy; 2024 MTS. Todos os direitos reservados.</p>
+        </div>
     </footer>
+
+    <script>
+        function toggleDropdown(event) {
+            event.preventDefault();
+            const dropdown = event.target.closest('.dropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Fecha o dropdown ao clicar fora dele
+        document.addEventListener('click', (event) => {
+            const dropdown = document.querySelector('.dropdown.show');
+            if (dropdown && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        function toggleFooter() {
+            const footer = document.getElementById('footer');
+            footer.classList.toggle('expanded');
+        }
+
+        function toggleMenu() {
+            document.querySelector('.menu-bar').classList.toggle('show');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Função para capturar o elemento de arraste
+            function getDragAfterElement(container, y) {
+                const draggableElements = [...container.querySelectorAll('.task:not(.dragging)')];
+                return draggableElements.reduce((closest, child) => {
+                    const box = child.getBoundingClientRect();
+                    const offset = y - box.top - box.height / 2;
+                    if (offset < 0 && offset > closest.offset) {
+                        return { offset: offset, element: child };
+                    } else {
+                        return closest;
+                    }
+                }, { offset: Number.NEGATIVE_INFINITY }).element;
+            }
+
+            // Mapeamento de status para as colunas
+            const statusMap = {
+                'todo': { id: '1', text: 'Iniciado' },
+                'doing': { id: '2', text: 'Em andamento' },
+                'done': { id: '3', text: 'Finalizado' }
+            };
+
+            // Adiciona eventos de drag-and-drop a cada tarefa
+            document.querySelectorAll('.task').forEach(task => {
+                task.addEventListener('dragstart', () => {
+                    task.classList.add('dragging');
+                });
+
+                task.addEventListener('dragend', () => {
+                    task.classList.remove('dragging');
+                });
+            });
+
+            // Configura o comportamento para cada coluna
+            document.querySelectorAll('.tasks').forEach(tasksContainer => {
+                tasksContainer.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    const draggingTask = document.querySelector('.dragging');
+                    const afterElement = getDragAfterElement(tasksContainer, e.clientY);
+                    if (afterElement) {
+                        tasksContainer.insertBefore(draggingTask, afterElement);
+                    } else {
+                        tasksContainer.appendChild(draggingTask);
+                    }
+                });
+
+                tasksContainer.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const draggingTask = document.querySelector('.dragging');
+                    
+                    if (!draggingTask) {
+                        console.error("Nenhuma tarefa arrastada.");
+                        return;
+                    }
+
+                    const orderId = draggingTask.getAttribute('data-order-id');
+                    const newStatusKey = tasksContainer.parentElement.id; // 'todo', 'doing', 'done'
+                    const newStatus = statusMap[newStatusKey];
+
+                    if (!newStatus) {
+                        console.error("Status desconhecido.");
+                        return;
+                    }
+
+                    // Atualiza o texto da tarefa
+                    const originalText = draggingTask.textContent.split(' - ')[0];
+                    draggingTask.textContent = `${originalText} - Status: ${newStatus.text}`;
+
+                    // Envia a requisição para atualizar o status no back-end
+                    if (orderId) {
+                        fetch("{% url 'home' %}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            },
+                            body: `order_id=${orderId}&new_status=${newStatus.id}`
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                console.log('Status atualizado com sucesso!');
+                            } else {
+                                console.error('Erro ao atualizar o status:', data.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro na requisição:', error);
+                        });
+                    } else {
+                        console.error("Order ID não definido corretamente.");
+                    }
+                });
+            });
+        });
+    </script>
+
 </body>
 </html>

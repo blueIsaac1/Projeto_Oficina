@@ -1,67 +1,295 @@
-/* Estilos gerais */
+/* Estilos Gerais */
 html, body {
     height: 100%;
     margin: 0;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden; /* Evita estouro lateral */
 }
 
 body {
     display: flex;
     flex-direction: column;
+    background-color: #f4f4f4;
 }
 
 .content {
     flex: 1;
     padding: 20px;
     background-color: #f9f9f9;
+    box-sizing: border-box;
+    width: 100%;
 }
-
 
 /* Estilos para o Navbar */
 .header {
     background-color: #333;
     color: white;
-    padding: 25px 50px;
+    padding: 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 1;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.menu-bar a{
-    font-size: 1.5rem;
-    color: white;
-    margin-left: 3.5rem;
-    transition: 0.4s ease;
+.logo {
+    font-size: 1.8rem;
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    margin: 0;
 }
 
-#menu-btn{
-    font-size: 3rem;
-    display: none;
+.menu-bar {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
+
 .menu-bar a {
-    font-size: 1.5rem;
-    margin-left: 3.5rem;
-    transition: 0.4s ease;
+    font-size: 1rem;
+    color: white;
+    text-decoration: none;
+    padding: 8px;
+    transition: color 0.3s ease;
+    border-radius: 4px;
 }
 
-/*passar o mouse e a cor mudar*/
 .menu-bar a:hover {
-    color: #A020F0;
+    color: #daa520;
 }
 
+#menu-btn {
+    font-size: 2rem;
+    color: #fff;
+    display: none;
+    cursor: pointer;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .menu-bar {
+        display: none;
+        flex-direction: column;
+        background-color: #333;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        padding: 10px 0;
+    }
+
+    .menu-bar.show {
+        display: flex;
+    }
+
+    #menu-btn {
+        display: block;
+    }
+}
 
 /* Estilos para o Footer */
 footer {
     background-color: #333;
     color: white;
     text-align: center;
-    padding: 10px 0;
-    position: relative;
-    bottom: 0;
+    padding: 3px 0;
     width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
 }
 
-/* Opcional: se quiser um fundo distinto no footer */
-footer p {
-    margin: 0; /* Remove margens do parágrafo */
+footer.expanded {
+    max-height: 200px;
+}
+
+#footer-content {
+    display: none;
+    padding: 50px;
+}
+
+footer.expanded #footer-content {
+    display: block;
+}
+
+#footer-label {
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+footer.expanded #footer-label {
+    display: none;
+}
+
+/* Estilos para a Tabela */
+.container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.board {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.column {
+    background-color: white;
+    border-radius: 5px;
+    width: 300px;
+    margin: 10px;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+
+.column h2 {
+    text-align: center;
+    margin: 0 0 10px;
+}
+
+.tasks {
+    min-height: 200px;
+}
+
+.task {
+    background-color: #ebecf0;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 3px;
+}
+
+.task-input {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+/* Dropdown */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #333;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    padding-top: 5px;
+}
+
+.dropdown-content a {
+    color: white;
+    padding: 10px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #444;
+}
+
+.dropdown.show .dropdown-content {
+    display: block;
+}
+
+/* Estilos Específicos para a Página de Formulário */
+.formulario-container {
+    max-width: 600px;
+    margin: auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.formulario-container h2 {
+    text-align: center;
+    color: #333;
+}
+
+.formulario-container form {
+    margin-bottom: 15px;
+}
+
+.formulario-container label {
+    font-weight: bold;
+    display: block;
+    margin: 10px 0 5px;
+}
+
+.formulario-container input,
+.formulario-container textarea,
+.formulario-container button,
+.formulario-container select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    color: #333;
+}
+
+
+.formulario-container button {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.formulario-container button:hover {
+    background-color: #45a049;
+}
+
+.formulario-container .inline-button {
+    display: inline-block;
+    width: auto;
+    padding: 8px 12px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: -5px;
+}
+
+.formulario-container .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.formulario-container .modal-content {
+    background-color: #fff;
+    padding: 20px;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.formulario-container .close-modal {
+    background: red;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    float: right;
+    font-size: 1.2rem;
 }

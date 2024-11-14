@@ -14,7 +14,7 @@ fake = Faker()
 def insert_data():
     # Inserir dados em Services
     # for _ in range(15):
-    #     service = Services(name=fake.word().capitalize(), price=round(random.uniform(10.0, 500.0), 2), 
+    #     service = Services(name=fake.word().capitalize(), price=round(random.uniform(10.0, 500.0), 2),
     #                        description=fake.sentence())
     #     service.save()
 
@@ -29,8 +29,8 @@ def insert_data():
             name=fake.name(),
             email=fake.unique.email(),
             addres=fake.address(),
-            cpf=fake.unique.random_int(min=10000000000, max=99999999999), 
-            rg=fake.unique.random_int(min=100000000, max=999999999), 
+            cpf=fake.unique.random_int(min=10000000000, max=99999999999),
+            rg=fake.unique.random_int(min=100000000, max=999999999),
             phone=fake.unique.phone_number()[:11]  # Assegura que o telefone não exceda 11 caracteres
         )
         client.save()
@@ -40,8 +40,8 @@ def insert_data():
     for _ in range(15):
         product = Products(
             name=fake.word().capitalize(),
-            status_p=random.choice(['1', '2']), 
-            category=random.choice(categories), 
+            status_p=random.choice(['1', '2']),
+            category=random.choice(categories),
             description=fake.sentence()
         )
         product.save()
@@ -58,11 +58,11 @@ def insert_data():
     services = Services.objects.all()
     for _ in range(15):
         order = Orders(
-            status_o=random.choice(['1', '2', '3', '4']), 
-            o_client=random.choice(clients), 
-            o_product=random.choice(products), 
+            status_o=random.choice(['1', '2', '3', '4']),
+            o_client=random.choice(clients),
+            o_product=random.choice(products),
             o_payment=random.choice(payments),
-            created_by=None, 
+            created_by=None,
             s_price=random.choice(services)
         )
         order.save()
@@ -73,8 +73,8 @@ def insert_data():
             e_name=fake.name(),
             e_email=fake.unique.email(),
             e_addres=fake.address(),
-            e_cpf=fake.unique.random_int(min=10000000000, max=99999999999), 
-            e_rg=fake.unique.random_int(min=100000000, max=999999999), 
+            e_cpf=fake.unique.random_int(min=10000000000, max=99999999999),
+            e_rg=fake.unique.random_int(min=100000000, max=999999999),
             e_phone=fake.unique.phone_number()[:11]  # Assegura que o telefone não exceda 11 caracteres
         )
         employee.save()

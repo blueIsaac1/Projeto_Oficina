@@ -17,5 +17,3 @@ class CustomSite(AdminSite):
             app['models'].reverse()
 
         return app_list
-
-site = CustomSite()
